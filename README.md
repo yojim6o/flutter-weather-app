@@ -1,16 +1,18 @@
 # weather_app
 
-A new Flutter project.
+Minimalist weather app using OpenWeatherMap API
 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+Use of bloc and streams for data requests and display different data on screen.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Steps on running the project
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+-Install Android Studio along Android SDK and all available tools.
+-Open a new Android Studio project and create a new virtual device, or register a physical device (this is my case, as I'm using my physical phone).
+-Install Flutter and Dart extensions in VS Code.
+-In VS Code, Ctrl + Shift + P -> Flutter: Select Device and select the device you prefer for running the app
+-Run "flutter pub get" and "flutter run".
+-Press 'r' for quick reload and 'shift + r' for deep reload
