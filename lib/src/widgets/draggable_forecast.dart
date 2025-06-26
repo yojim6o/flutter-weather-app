@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:weather_app/src/bloc/weather_controller.dart';
+import 'package:weather_app/src/bloc/weather_provider.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/forecast_card.dart';
@@ -10,12 +11,19 @@ import 'package:collection/collection.dart' show groupBy;
 
 class DraggableForecast extends StatelessWidget {
   final WeatherModel weatherModel;
-  final weatherController = Get.find<WeatherController>();
+  final WeatherController bloc;
 
-  DraggableForecast({super.key, required this.weatherModel});
+  const DraggableForecast({
+    super.key,
+    required this.weatherModel,
+    required this.bloc,
+  });
 
   @override
   Widget build(BuildContext context) {
+    print(
+      "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->DraggableSheet",
+    );
     return DraggableScrollableSheet(
       initialChildSize: 0.06,
       minChildSize: 0.06,
@@ -69,7 +77,10 @@ class DraggableForecast extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
-                    children: [_buildForecastList(), _buildScrollTab()],
+                    children: [
+                      _buildForecastList(context),
+                      _buildScrollTab(context),
+                    ],
                   ),
                 ],
               ),
@@ -80,18 +91,24 @@ class DraggableForecast extends StatelessWidget {
     );
   }
 
-  Widget _buildForecastList() {
+  Widget _buildForecastList(BuildContext context) {
     return Expanded(
       flex: 8,
-      child: Obx(() {
-        final forecastList = weatherController.forecastList;
-        if (forecastList.isEmpty) return const SizedBox.shrink();
-        return ForecastCard(forecastList.first);
-      }),
+      child: StreamBuilder<List<ForecastItem>>(
+        stream: bloc.forecastStream,
+        builder: (context, AsyncSnapshot<List<ForecastItem>> snapshot) {
+          if (!snapshot.hasData) {
+            return Material();
+          }
+          final forecastList = snapshot.data!;
+          if (forecastList.isEmpty) return const SizedBox.shrink();
+          return ForecastCard(forecastList.first);
+        },
+      ),
     );
   }
 
-  Widget _buildScrollTab() {
+  Widget _buildScrollTab(BuildContext context) {
     final Map<DateTime, List<ForecastItem>> tabMap = groupBy(
       weatherModel.forecastList,
       (f) => f.dt,
@@ -99,9 +116,7 @@ class DraggableForecast extends StatelessWidget {
 
     // Inicializar una vez con la primera selección
     Future.microtask(() {
-      if (weatherController.forecastList.isEmpty) {
-        weatherController.addForecast(tabMap.entries.elementAt(0).value);
-      }
+      bloc.addForecast(tabMap.entries.elementAt(0).value);
     });
 
     return Expanded(
@@ -122,7 +137,7 @@ class DraggableForecast extends StatelessWidget {
         scrollPhysics: const BouncingScrollPhysics(),
         hapticFeedbackType: HapticFeedbackType.vibrate,
         onValueChanged: (val) {
-          weatherController.addForecast(tabMap.entries.elementAt(val).value);
+          bloc.addForecast(tabMap.entries.elementAt(val).value);
         },
         children: List.generate(
           tabMap.length,

@@ -1,10 +1,21 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/services/weather_service.dart';
 
-class WeatherController extends GetxController {
+class WeatherController {
   final WeatherService weatherService = WeatherService();
+
+  final _weatherController = PublishSubject<WeatherModel>();
+  Stream<WeatherModel> get weatherStream => _weatherController.stream;
+  void Function(WeatherModel) get addWeather => _weatherController.sink.add;
+
+  final _forecastController = PublishSubject<List<ForecastItem>>();
+  Stream<List<ForecastItem>> get forecastStream => _forecastController.stream;
+  void Function(List<ForecastItem>) get addForecast =>
+      _forecastController.sink.add;
 
   WeatherController() {
     _init();
@@ -15,32 +26,16 @@ class WeatherController extends GetxController {
     fetchWeatherInfo();
   }
 
-  // Reactive state
-  final Rx<WeatherModel?> weather = Rx<WeatherModel?>(null);
-  final RxList<ForecastItem> forecastList = <ForecastItem>[].obs;
-  final RxBool isLoading = true.obs;
-  final Rxn<String> error = Rxn<String>();
-
   Future<void> fetchWeatherInfo() async {
-    isLoading.value = true;
-    error.value = null;
     try {
       debugPrint("WeatherController: Fetching info from weatherService");
       final weatherInfo = await weatherService.getWeather();
-      weather.value = weatherInfo;
+      _weatherController.sink.add(weatherInfo);
     } catch (e) {
       debugPrint(
         "WeatherController: An error occured while fetching data in weatherService",
       );
-      error.value = 'Error during data fetching: $e';
-      weather.value = null;
-    } finally {
-      isLoading.value = false;
+      _weatherController.sink.addError(e);
     }
-  }
-
-  // Set forecast list
-  void addForecast(List<ForecastItem> list) {
-    forecastList.assignAll(list);
   }
 }

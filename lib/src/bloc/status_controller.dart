@@ -60,7 +60,7 @@ class StatusController {
         if (l == ServiceStatus.disabled) return ConnectionStatus.locationOff;
         if (i == ConnectivityResult.none) return ConnectionStatus.internetOff;
         return ConnectionStatus.ok;
-      });
+      }).distinct();
 
   final serviceStatusValidator =
       StreamTransformer<ServiceStatus, ServiceStatus>.fromHandlers(
