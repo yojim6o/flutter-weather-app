@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/src/bloc/status_controller.dart';
-import 'package:weather_app/src/bloc/weather_controller.dart';
+import 'package:weather_app/src/bloc/__weather_controller.dart';
 
 class WeatherProvider extends InheritedWidget {
   final bloc = WeatherController();

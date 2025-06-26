@@ -1,4 +1,4 @@
-part of '../bloc/theme_cubit.dart';
+part of '../theme_cubit.dart';
 
 class ThemeState extends Equatable {
   const ThemeState({

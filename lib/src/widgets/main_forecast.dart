@@ -11,7 +11,7 @@ class MainForecast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
+    debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->MainForecast",
     );
     final firstForecastItem = weatherModel.forecastList.first;

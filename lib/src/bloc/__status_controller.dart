@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -88,4 +88,5 @@ class StatusController {
       );
 }
 
-enum ConnectionStatus { locationOff, internetOff, ok }
+enum ConnectionSta { locationOff, internetOff, ok }
+ */

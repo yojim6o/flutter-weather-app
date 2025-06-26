@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/instance_manager.dart';
-import 'package:weather_app/src/bloc/status_controller.dart';
-import 'package:weather_app/src/bloc/status_provider.dart';
-import 'package:weather_app/src/bloc/weather_controller.dart';
-import 'package:weather_app/src/bloc/weather_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather_app/src/bloc/connection_cubit.dart';
+import 'package:weather_app/src/bloc/states/connection_state.dart';
 import 'package:weather_app/src/pages/weather_page.dart';
 import 'package:weather_app/src/widgets/error/generic_error.dart';
 import 'package:weather_app/src/widgets/utility/loading_spin.dart';
@@ -16,34 +14,32 @@ class ConnectionStatusListenerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Build App->AppView->Builder->ConnectionStatusListener");
-    return StreamBuilder(
-      stream: StatusProvider.of(context).connectionsAreOK,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<ConnectionStatus> snapshot,
-      ) {
-        if (!snapshot.hasData) {
+    debugPrint("Build App->AppView->Builder->ConnectionStatusListener");
+    return BlocBuilder<ConnectionCubit, ConnectionStatus>(
+      builder: (BuildContext context, ConnectionStatus state) {
+        if (state is ConnectionLoading) {
           return const LoadingSpin();
         }
 
-        final data = snapshot.data!;
-
-        if (data == ConnectionStatus.locationOff) {
+        if (state is LocationDisabled) {
           return const GenericError(
             animationName: "location_disabled",
             message: 'Location service is disabled',
           );
         }
 
-        if (data == ConnectionStatus.internetOff) {
+        if (state is NetworkDisabled) {
           return const GenericError(
             animationName: "invalid_request",
             message: 'No internet connection',
           );
         }
 
-        return const WeatherPage();
+        if (state is ConnectionLoaded) {
+          return const WeatherPage();
+        }
+
+        return const Material();
       },
     );
   }

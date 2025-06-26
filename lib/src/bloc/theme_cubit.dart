@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app/src/repository/theme_repository.dart';
 
-part '../themes/theme_state.dart';
+part 'states/theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
   ThemeCubit({required ThemePersistence themeRepository})

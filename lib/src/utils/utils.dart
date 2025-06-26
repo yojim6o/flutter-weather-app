@@ -1,25 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_app/src/models/weather_model.dart';
 
 class Utils {
-  static String calculateVerboseWeekday(DateTime date) {
-    DateTime now = DateTime.now();
-    final int difference =
-        DateTime(
-          date.year,
-          date.month,
-          date.day,
-        ).difference(DateTime(now.year, now.month, now.day)).inDays;
-
-    switch (difference) {
-      case 0:
-        return 'Today';
-      case 1:
-        return 'Tomorrow';
-      default:
-        return '${date.day}/${date.month}';
-    }
-  }
-
   static String getWeatherAnimation(String description, bool isDay) {
     String momentOfDay = isDay ? 'day' : 'night';
     switch (description.toLowerCase()) {
@@ -55,5 +38,14 @@ class Utils {
       return 'Tmr, ${inputHour}h';
     }
     return '$inputWeekday, ${inputHour}h';
+  }
+
+  static Map<String, List<ForecastItem>> mapWeatherToForecastItems(
+    WeatherModel weatherModel,
+  ) {
+    return groupBy(
+      weatherModel.forecastList,
+      (f) => formatDateToWheelItem(f.dt),
+    );
   }
 }

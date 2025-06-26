@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:weather_app/src/bloc/status_controller.dart';
 
 class StatusProvider extends InheritedWidget {
@@ -15,3 +15,4 @@ class StatusProvider extends InheritedWidget {
     return context.dependOnInheritedWidgetOfExactType<StatusProvider>()!.bloc;
   }
 }
+ */

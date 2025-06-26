@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/services/weather_service.dart';

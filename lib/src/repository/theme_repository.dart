@@ -44,8 +44,6 @@ class ThemeRepository implements ThemePersistence {
     } else {
       _controller.sink.add(CustomTheme.light);
     }
-
-    Future.delayed(Duration(seconds: 7), () => saveTheme(CustomTheme.dark));
   }
 
   @override
