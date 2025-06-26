@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-class LocationDisabledError extends StatelessWidget {
-  const LocationDisabledError({super.key});
+class GenericError extends StatelessWidget {
+  final String animationName;
+  final String message;
+  const GenericError({
+    super.key,
+    required this.animationName,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,13 +17,13 @@ class LocationDisabledError extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Lottie.asset("assets/location_disabled.json"),
+          Lottie.asset("assets/error/$animationName.json"),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Location service is disabled',
+              message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(),
+              style: Theme.of(context).textTheme.displaySmall,
             ),
           ),
         ],

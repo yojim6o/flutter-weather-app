@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class TTextTheme {
   static const Color _lightColor = Colors.black87;
-  static const Color _darkColor = Color.fromARGB(221, 213, 211, 211);
+  static const Color _darkColor = Color.fromARGB(221, 218, 216, 216);
 
   static final _lightTheme = GoogleFonts.pontanoSansTextTheme().copyWith(
     displayLarge: GoogleFonts.pontanoSans().copyWith(

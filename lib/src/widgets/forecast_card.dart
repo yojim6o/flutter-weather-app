@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/utils/utils.dart';
-import 'package:weather_app/src/widgets/my_virtual_divider.dart';
+import 'package:weather_app/src/widgets/utility/my_virtual_divider.dart';
 
 class ForecastCard extends StatelessWidget {
   final ForecastItem forecast;
@@ -16,8 +16,6 @@ class ForecastCard extends StatelessWidget {
       children: [
         _header(context),
         Card(
-          shadowColor: Theme.of(context).colorScheme.secondary,
-          color: Theme.of(context).colorScheme.secondary,
           child: Padding(
             padding: EdgeInsetsGeometry.fromLTRB(16, 0, 16, 16),
             child: Column(
@@ -46,14 +44,6 @@ class ForecastCard extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          /* RotationTransition(
-            turns: draggableArrowController.animation,
-            child: Icon(
-              HugeIcons.strokeRoundedArrowUp01,
-              size: 24,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ), */
         ],
       ),
     );
@@ -130,7 +120,7 @@ class ForecastCard extends StatelessWidget {
     result.add(
       _columnInfo(
         HugeIcons.strokeRoundedCloudAngledRain,
-        '${forecast.rainProb.round()}',
+        '${(forecast.rainProb * 100).round()}',
         '%',
       ),
     );

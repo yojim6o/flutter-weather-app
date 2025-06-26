@@ -1,42 +1,44 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:get/instance_manager.dart';
+import 'package:weather_app/src/bloc/status_controller.dart';
+import 'package:weather_app/src/bloc/status_provider.dart';
+import 'package:weather_app/src/bloc/weather_controller.dart';
 import 'package:weather_app/src/pages/weather_page.dart';
-import 'package:weather_app/src/widgets/location_disabled_error.dart';
+import 'package:weather_app/src/widgets/error/generic_error.dart';
+import 'package:weather_app/src/widgets/utility/loading_spin.dart';
 
 class LocationListenerPage extends StatelessWidget {
-  final StreamController<bool> _serviceStatusController =
-      StreamController<bool>();
-  late final Stream<bool> _serviceStatusStream;
+  //final locationController = Get.put(LocationController());
+  final weatherController = Get.lazyPut(() => WeatherController());
 
   LocationListenerPage({super.key});
 
-  void initState() async {
-    _serviceStatusStream = _serviceStatusController.stream.asBroadcastStream();
-    bool isServiceEnabled = await Geolocator.isLocationServiceEnabled();
-    _serviceStatusController.sink.add(isServiceEnabled);
-
-    Geolocator.getServiceStatusStream().listen((ServiceStatus serviceStatus) {
-      _serviceStatusController.sink.add(serviceStatus == ServiceStatus.enabled);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    initState();
-    return StreamBuilder<bool>(
-      stream: _serviceStatusStream,
-      builder: (context, AsyncSnapshot<bool> snapshot) {
+    return StreamBuilder(
+      stream: StatusProvider.of(context).connectionsAreOK,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<ConnectionStatus> snapshot,
+      ) {
         if (!snapshot.hasData) {
-          return SpinKitSpinningLines(
-            color: Theme.of(context).colorScheme.primary,
+          return LoadingSpin();
+        }
+
+        final data = snapshot.data!;
+
+        if (data == ConnectionStatus.locationOff) {
+          return GenericError(
+            animationName: "location_disabled",
+            message: 'Location service is disabled',
           );
         }
 
-        if (!snapshot.data!) {
-          return LocationDisabledError();
+        if (data == ConnectionStatus.internetOff) {
+          return GenericError(
+            animationName: "invalid_request",
+            message: 'No internet connection',
+          );
         }
 
         return WeatherPage();

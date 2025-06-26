@@ -1,26 +1,27 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:weather_app/main.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 
 class WeatherService {
-  static Uri BASE_URL = Uri(
+  static final Uri baseUrl = Uri(
     scheme: 'https',
     host: 'api.openweathermap.org',
     path: 'data/2.5/forecast',
   );
-  final String apiKey;
-
-  WeatherService({required this.apiKey});
+  final String apiKey = API_KEY;
 
   Future<WeatherModel> getWeather() async {
     final String cityName = await _determineCityName();
-    final response = await http.get(
-      BASE_URL.replace(
-        queryParameters: {'q': cityName, 'appid': apiKey, 'units': 'metric'},
-      ),
+    final uri = baseUrl.replace(
+      queryParameters: {'q': cityName, 'appid': apiKey, 'units': 'metric'},
     );
+    debugPrint("WeatherService: Calling HTTTP $uri");
+    final response = await http.get(uri);
+    debugPrint('WeatherService: ${response.toString()}');
 
     if (response.statusCode == 200) {
       return WeatherModel.fromJson(jsonDecode(response.body));

@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:weather_app/src/animation/draggable_arrow_controller.dart';
-import 'package:weather_app/src/bloc/bloc.dart';
+import 'package:weather_app/src/bloc/weather_controller.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/forecast_card.dart';
@@ -11,19 +10,12 @@ import 'package:collection/collection.dart' show groupBy;
 
 class DraggableForecast extends StatelessWidget {
   final WeatherModel weatherModel;
-  final Bloc bloc;
-  final draggableArrowController = Get.put(DraggableArrowController());
-  late final DraggableScrollableController dragController;
+  final weatherController = Get.find<WeatherController>();
 
-  DraggableForecast({
-    super.key,
-    required this.weatherModel,
-    required this.bloc,
-  });
+  DraggableForecast({super.key, required this.weatherModel});
 
   @override
   Widget build(BuildContext context) {
-    dragController = draggableArrowController.dragController;
     return DraggableScrollableSheet(
       initialChildSize: 0.06,
       minChildSize: 0.06,
@@ -31,26 +23,28 @@ class DraggableForecast extends StatelessWidget {
       snapSizes: const [0.06],
       snap: true,
       expand: true,
-      controller: dragController,
       builder: (BuildContext context, ScrollController scrollController) {
-        dragController.addListener(draggableArrowController.listener);
-
         return DecoratedBox(
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withValues(alpha: 0.5),
-                spreadRadius: 2,
+                color: ColorScheme.of(context).tertiary,
                 blurRadius: 8,
-                offset: Offset(0, 3), // changes position of shadow
+                spreadRadius: -2,
+                offset: Offset(0, 4),
+              ),
+              BoxShadow(
+                color: const Color.fromRGBO(9, 30, 66, 0.08),
+                blurRadius: 0,
+                spreadRadius: 1,
+                offset: Offset(0, 0),
               ),
             ],
-
-            borderRadius: BorderRadiusDirectional.vertical(
+            borderRadius: const BorderRadiusDirectional.vertical(
               top: Radius.circular(16),
               bottom: Radius.circular(0),
             ),
-            color: Theme.of(context).colorScheme.secondary,
+            color: ColorScheme.of(context).surfaceContainerLowest,
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -75,10 +69,7 @@ class DraggableForecast extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
-                    children: [
-                      _buildForecastList(context, weatherModel),
-                      _buildScrollTab(context, weatherModel),
-                    ],
+                    children: [_buildForecastList(), _buildScrollTab()],
                   ),
                 ],
               ),
@@ -89,31 +80,28 @@ class DraggableForecast extends StatelessWidget {
     );
   }
 
-  Widget _buildForecastList(BuildContext context, WeatherModel weatherModel) {
-    return StreamBuilder<List<ForecastItem>>(
-      stream: bloc.forecastStream,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<ForecastItem>> snapshot,
-      ) {
-        if (!snapshot.hasData) {
-          return Container();
-        }
-
-        final ForecastItem forecast = snapshot.data![0];
-        return Expanded(flex: 8, child: ForecastCard(forecast));
-      },
+  Widget _buildForecastList() {
+    return Expanded(
+      flex: 8,
+      child: Obx(() {
+        final forecastList = weatherController.forecastList;
+        if (forecastList.isEmpty) return const SizedBox.shrink();
+        return ForecastCard(forecastList.first);
+      }),
     );
   }
 
-  Widget _buildScrollTab(BuildContext context, WeatherModel weatherModel) {
-    Map<DateTime, List<ForecastItem>> tabMap = groupBy(
+  Widget _buildScrollTab() {
+    final Map<DateTime, List<ForecastItem>> tabMap = groupBy(
       weatherModel.forecastList,
       (f) => f.dt,
     );
 
+    // Inicializar una vez con la primera selección
     Future.microtask(() {
-      bloc.addForecast(tabMap.entries.elementAt(0).value);
+      if (weatherController.forecastList.isEmpty) {
+        weatherController.addForecast(tabMap.entries.elementAt(0).value);
+      }
     });
 
     return Expanded(
@@ -128,13 +116,13 @@ class DraggableForecast extends StatelessWidget {
         listHeight: 200,
         verticalListHeight: 200,
         customPointer: Container(
-          margin: EdgeInsets.only(top: 30),
-          child: Icon(Icons.circle, size: 4),
+          margin: const EdgeInsets.only(top: 30),
+          child: const Icon(Icons.circle, size: 4),
         ),
         scrollPhysics: const BouncingScrollPhysics(),
         hapticFeedbackType: HapticFeedbackType.vibrate,
         onValueChanged: (val) {
-          bloc.addForecast(tabMap.entries.elementAt(val).value);
+          weatherController.addForecast(tabMap.entries.elementAt(val).value);
         },
         children: List.generate(
           tabMap.length,
