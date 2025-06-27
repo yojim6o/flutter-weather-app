@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:weather_app/src/bloc/states/connection_state.dart';
+import 'package:trent/trent.dart';
+import 'package:weather_app/src/trents/states/connection_state.dart';
 
-class ConnectionCubit extends Cubit<ConnectionStatus> {
+class ConnectionTrent extends Trent<ConnectionStatus> {
   // ignore: unused_field
   late final StreamSubscription _subscription;
 
-  ConnectionCubit() : super(ConnectionLoading()) {
+  ConnectionTrent() : super(ConnectionLoading()) {
     _startListening();
   }
 

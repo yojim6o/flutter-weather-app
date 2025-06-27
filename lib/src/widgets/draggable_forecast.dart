@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app/src/bloc/forecast_cubit.dart';
+import 'package:trent/trent.dart';
+import 'package:weather_app/src/trents/forecast_trent.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/widgets/forecast_card.dart';
 import 'package:wheel_slider/wheel_slider.dart';
@@ -9,7 +10,11 @@ import 'package:wheel_slider/wheel_slider.dart';
 class DraggableForecast extends StatelessWidget {
   final Map<String, List<ForecastItem>> forecastMap;
 
-  const DraggableForecast({super.key, required this.forecastMap});
+  DraggableForecast({super.key, required this.forecastMap}) {
+    get<ForecastTrent>().addForecastList(
+      forecastMap.entries.elementAtOrNull(0)?.value ?? [],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,22 +91,17 @@ class DraggableForecast extends StatelessWidget {
   Widget _buildForecastList(BuildContext context) {
     return Expanded(
       flex: 8,
-      child: BlocBuilder<ForecastCubit, List<ForecastItem>>(
-        builder: (context, List<ForecastItem> value) {
-          if (value.isEmpty) {
-            return const SizedBox.shrink();
-          }
-
-          return ForecastCard(value.first);
-        },
-      ),
+      child: watchMap<ForecastTrent, ForecastState>(context, (mapper) {
+        mapper
+          ..as<ForecastLoaded>((state) => ForecastCard(state.forecastItem))
+          ..orElse((_) => const SizedBox.shrink());
+      }),
     );
   }
 
   Widget _buildScrollTab(BuildContext context) {
     // Inicializar una vez con la primera selección
-    final forecastCubit = context.read<ForecastCubit>();
-    forecastCubit.addForecastList(forecastMap.entries.elementAt(0).value);
+    final forecastTrent = get<ForecastTrent>();
 
     return Expanded(
       flex: 2,
@@ -121,7 +121,7 @@ class DraggableForecast extends StatelessWidget {
         scrollPhysics: const BouncingScrollPhysics(),
         hapticFeedbackType: HapticFeedbackType.vibrate,
         onValueChanged: (val) {
-          forecastCubit.addForecastList(
+          forecastTrent.addForecastList(
             forecastMap.entries.elementAt(val).value,
           );
         },

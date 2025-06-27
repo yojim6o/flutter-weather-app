@@ -1,20 +1,18 @@
 import 'dart:async';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trent/trent.dart';
 import 'package:weather_app/src/repository/theme_repository.dart';
+import 'package:weather_app/src/trents/states/theme_state.dart';
 
-part 'states/theme_state.dart';
-
-class ThemeCubit extends Cubit<ThemeState> {
-  ThemeCubit({required ThemePersistence themeRepository})
+class ThemeTrent extends Trent<ThemeState> {
+  ThemeTrent({required ThemePersistence themeRepository})
     : _themeRepository = themeRepository,
-      super(const ThemeState());
+      super(ThemeState());
 
   final ThemePersistence _themeRepository;
   late StreamSubscription<CustomTheme> _themeSubscription;
-  static late bool
-  _isDarkTheme; // used to determine if the current theme is dark
+  // used to determine if the current theme is dark
+  static late bool _isDarkTheme;
 
   void getCurrentTheme() {
     // Since `getTheme()` returns a stream, we listen to the output
@@ -43,10 +41,9 @@ class ThemeCubit extends Cubit<ThemeState> {
     }
   }
 
-  @override
-  Future<void> close() {
+  close() {
     _themeSubscription.cancel();
     _themeRepository.dispose();
-    return super.close();
+    dispose();
   }
 }

@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,15 +15,16 @@ class WeatherService {
     path: 'data/2.5/forecast',
   );
   final String apiKey = API_KEY;
+  final client = http.Client();
 
   Future<WeatherModel> getWeather() async {
     final String cityName = await _determineCityName();
     final uri = baseUrl.replace(
       queryParameters: {'q': cityName, 'appid': apiKey, 'units': 'metric'},
     );
-    debugPrint("WeatherService: Calling HTTTP $uri");
-    final response = await http.get(uri);
-    debugPrint('WeatherService: ${response.toString()}');
+    debugPrint("WeatherService: Calling $uri");
+    final response = await client.get(uri);
+    debugPrint('WeatherService: ${response.body.substring(0, 20)}');
 
     if (response.statusCode == 200) {
       return WeatherModel.fromJson(jsonDecode(response.body));

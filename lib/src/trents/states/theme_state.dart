@@ -1,13 +1,13 @@
-part of '../theme_cubit.dart';
+import 'package:flutter/material.dart';
+import 'package:trent/trent.dart';
 
-class ThemeState extends Equatable {
-  const ThemeState({
-    this.themeMode = ThemeMode.light,
-  }); // Default theme = light theme
+class ThemeState extends EquatableCopyable<ThemeState> {
+  ThemeState({this.themeMode = ThemeMode.light}); // Default theme = light theme
 
   final ThemeMode themeMode;
 
   // `copyWith()` method allows us to emit brand new instance of ThemeState
+  @override
   ThemeState copyWith({ThemeMode? themeMode}) =>
       ThemeState(themeMode: themeMode ?? this.themeMode);
 

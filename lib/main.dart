@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:trent/trent.dart';
 import 'package:weather_app/src/app.dart';
 import 'package:weather_app/src/repository/theme_repository.dart';
+import 'package:weather_app/src/trents/connection_trent.dart';
+import 'package:weather_app/src/trents/forecast_trent.dart';
+import 'package:weather_app/src/trents/theme_trent.dart';
+import 'package:weather_app/src/trents/weather_trent.dart';
 
 // ignore: constant_identifier_names
 const API_KEY = "cc7ea74c6101f3d5ba6ee2b6e186b5be";
@@ -17,5 +22,16 @@ Future<void> main() async {
     sharedPreferences: await SharedPreferences.getInstance(),
   );
 
-  runApp(App(themeRepository: themeRepository));
+  runApp(
+    TrentManager(
+      trents: [
+        register(
+          ThemeTrent(themeRepository: themeRepository)..getCurrentTheme(),
+        ),
+        register(ConnectionTrent()),
+        register(WeatherTrent()),
+      ],
+      child: const App(),
+    ),
+  );
 }
