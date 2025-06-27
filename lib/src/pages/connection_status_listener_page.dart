@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trent/trent.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
 import 'package:weather_app/src/trents/states/connection_state.dart';
@@ -12,7 +11,7 @@ class ConnectionStatusListenerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Build App->AppView->Builder->ConnectionStatusListener");
+    //debugPrint("Build App->AppView->Builder->ConnectionStatusListener");
     return watchMap<ConnectionTrent, ConnectionStatus>(context, (mapper) {
       mapper
         ..as<ConnectionLoading>((state) => const LoadingSpin())

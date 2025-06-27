@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/utility/my_virtual_divider.dart';
@@ -42,7 +41,7 @@ class ForecastCard extends StatelessWidget {
           Text(
             'Hourly Forecast',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: TextTheme.of(context).headlineSmall,
           ),
         ],
       ),
@@ -54,8 +53,9 @@ class ForecastCard extends StatelessWidget {
       children: [
         Expanded(
           flex: 3,
-          child: Lottie.asset(
-            Utils.getWeatherAnimation(forecast.mainCondition, forecast.isDay),
+          child: Utils.getWeatherAnimation(
+            forecast.mainCondition,
+            forecast.isDay,
           ),
         ),
         Expanded(
@@ -63,7 +63,7 @@ class ForecastCard extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                Text(DateFormat('yyyy-MM-dd').format(forecast.dt)),
+                Text(DateFormat('EEE dd, y').format(forecast.dt)),
                 Text(
                   "${forecast.dt.hour}h",
                   style: Theme.of(context).textTheme.displayMedium,
@@ -85,63 +85,58 @@ class ForecastCard extends StatelessWidget {
       child: Row(
         spacing: 8,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [..._toDetailList()],
+        children: [..._buildDetailsColumns(context)],
       ),
     );
   }
 
-  List<Widget> _toDetailList() {
-    final List<Widget> result = [];
-    result.add(MyVirtualDivider(Color(0xFF4285F4)));
-    result.add(
-      _columnInfo(
-        HugeIcons.strokeRoundedTemperature,
-        '${forecast.temperature.round()}',
-        'º',
-      ),
-    );
-    result.add(MyVirtualDivider(Color(0xFFEA4335)));
-    result.add(
-      _columnInfo(
-        HugeIcons.strokeRoundedFastWind,
-        '${forecast.wind.round()}',
-        'm/s',
-      ),
-    );
-    result.add(MyVirtualDivider(Color(0xFFFBBC05)));
-    result.add(
-      _columnInfo(
-        HugeIcons.strokeRoundedHumidity,
-        '${forecast.humidity.round()}',
-        '%',
-      ),
-    );
-    result.add(MyVirtualDivider(Color(0xFF34A853)));
-    result.add(
-      _columnInfo(
-        HugeIcons.strokeRoundedCloudAngledRain,
-        '${(forecast.rainProb * 100).round()}',
-        '%',
-      ),
-    );
-    result.add(MyVirtualDivider(Color(0xFF4285F4)));
-    return result;
-  }
+  List<Widget> _buildDetailsColumns(BuildContext context) {
+    final List<Map<String, dynamic>> details = [
+      {
+        'icon': HugeIcons.strokeRoundedTemperature,
+        'value': '${forecast.temperature.round()}',
+        'unit': 'º',
+        'color': const Color(0xFF4285F4),
+      },
+      {
+        'icon': HugeIcons.strokeRoundedFastWind,
+        'value': '${forecast.wind.round()}',
+        'unit': 'm/s',
+        'color': const Color(0xFFEA4335),
+      },
+      {
+        'icon': HugeIcons.strokeRoundedHumidity,
+        'value': '${forecast.humidity.round()}',
+        'unit': '%',
+        'color': const Color(0xFFFBBC05),
+      },
+      {
+        'icon': HugeIcons.strokeRoundedCloudAngledRain,
+        'value': '${(forecast.rainProb * 100).round()}',
+        'unit': '%',
+        'color': const Color(0xFF34A853),
+      },
+    ];
 
-  Widget _columnInfo(IconData iconData, String value, String unit) {
-    return Column(
-      spacing: 4,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(iconData, size: 32),
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+    return [
+      for (var detail in details) ...[
+        MyVirtualDivider(detail['color']),
+        Column(
+          spacing: 4,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(detail['icon'], size: 32, color: IconTheme.of(context).color),
+            Text(
+              detail['value'],
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+            ),
+            Text(detail['unit'], textAlign: TextAlign.center),
+          ],
         ),
-        Text(unit, textAlign: TextAlign.center),
       ],
-    );
+      MyVirtualDivider(const Color(0xFF4285F4)),
+    ];
   }
 }

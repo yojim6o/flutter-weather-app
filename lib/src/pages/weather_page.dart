@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trent/trent.dart';
 import 'package:weather_app/src/trents/forecast_trent.dart';
 import 'package:weather_app/src/trents/weather_trent.dart';
@@ -17,9 +16,9 @@ class WeatherPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
+    /* debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage",
-    );
+    ); */
     return watchMap<WeatherTrent, WeatherState>(context, (mapper) {
       mapper
         ..as<WeatherLoading>((state) => const LoadingSpin())
@@ -43,7 +42,7 @@ class WeatherPage extends StatelessWidget {
           ),
         )
         ..orElse((state) {
-          debugPrint(state.toString());
+          //debugPrint(state.toString());
           return const Text("No Datu");
         });
     });

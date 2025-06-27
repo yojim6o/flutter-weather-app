@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/utility/theme_switch.dart';
@@ -11,9 +11,9 @@ class MainForecast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
+    /* debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->MainForecast",
-    );
+    ); */
     final firstForecastItem = weatherModel.forecastList.first;
     return Stack(
       children: [
@@ -21,11 +21,9 @@ class MainForecast extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             _CityLabel(weatherModel.cityName),
-            Lottie.asset(
-              Utils.getWeatherAnimation(
-                firstForecastItem.mainCondition,
-                firstForecastItem.isDay,
-              ),
+            Utils.getWeatherAnimation(
+              firstForecastItem.mainCondition,
+              firstForecastItem.isDay,
             ),
             _TemperatureLabel(weatherModel: weatherModel),
           ],
@@ -45,7 +43,12 @@ class _CityLabel extends StatelessWidget {
     return Column(
       children: [
         Icon(Icons.location_on, color: IconTheme.of(context).color),
-        Text(city ?? 'N/A', style: TextTheme.of(context).titleLarge),
+        Text(
+          city?.toUpperCase() ?? 'N/A',
+          style: TextTheme.of(
+            context,
+          ).titleLarge?.copyWith(fontFamily: GoogleFonts.oswald().fontFamily),
+        ),
       ],
     );
   }
@@ -62,13 +65,16 @@ class _TemperatureLabel extends StatelessWidget {
       children: [
         Text(
           '${weatherModel.forecastList[0].temperature.round()}º',
-          style: TextTheme.of(context).displayMedium,
+          style: TextTheme.of(context).displayMedium?.copyWith(
+            fontFamily: GoogleFonts.oswald().fontFamily,
+            fontWeight: FontWeight.w800,
+          ),
         ),
         Text(
           '/${weatherModel.forecastList[0].feelsLike.round()}º',
           style: TextTheme.of(
             context,
-          ).bodyLarge?.copyWith(color: ColorScheme.of(context).secondary),
+          ).bodyLarge?.copyWith(fontFamily: GoogleFonts.oswald().fontFamily),
         ),
       ],
     );

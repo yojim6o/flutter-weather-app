@@ -1,7 +1,6 @@
 // weather_cubit.dart
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:trent/trent.dart';
 import 'package:weather_app/src/services/weather_service.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
@@ -25,7 +24,7 @@ class WeatherTrent extends Trent<WeatherState> {
   }
 
   Future<void> _fetchWeatherInfo() async {
-    debugPrint("WeatherCubit: Fetching info from weatherService");
+    //debugPrint("WeatherCubit: Fetching info from weatherService");
     emit(WeatherLoading());
 
     try {
@@ -33,7 +32,7 @@ class WeatherTrent extends Trent<WeatherState> {
       emit(WeatherLoaded(weather: weather));
       _restartRefreshTimer();
     } catch (e) {
-      debugPrint("WeatherCubit: Error fetching weather info: $e");
+      //debugPrint("WeatherCubit: Error fetching weather info: $e");
       emit(WeatherError("Failed to fetch weather data"));
     }
   }

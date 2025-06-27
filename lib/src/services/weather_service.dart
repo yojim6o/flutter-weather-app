@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -22,9 +20,9 @@ class WeatherService {
     final uri = baseUrl.replace(
       queryParameters: {'q': cityName, 'appid': apiKey, 'units': 'metric'},
     );
-    debugPrint("WeatherService: Calling $uri");
+    //debugPrint("WeatherService: Calling $uri");
     final response = await client.get(uri);
-    debugPrint('WeatherService: ${response.body.substring(0, 20)}');
+    //debugPrint('WeatherService: ${response.body.substring(0, 20)}');
 
     if (response.statusCode == 200) {
       return WeatherModel.fromJson(jsonDecode(response.body));

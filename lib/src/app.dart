@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trent/trent.dart';
-import 'package:weather_app/src/repository/theme_repository.dart';
 import 'package:weather_app/src/themes/app_theme.dart';
-import 'package:weather_app/src/trents/connection_trent.dart';
 import 'package:weather_app/src/trents/theme_trent.dart';
 import 'package:weather_app/src/pages/connection_status_listener_page.dart';
 
@@ -12,7 +9,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Build App");
+    //debugPrint("Build App");
     return const AppView();
   }
 }
@@ -22,7 +19,7 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("Build App->AppView");
+    //debugPrint("Build App->AppView");
     final themeMode = watch<ThemeTrent>(context);
     return MaterialApp(
       theme: AppTheme.light,
@@ -31,7 +28,7 @@ class AppView extends StatelessWidget {
       debugShowCheckedModeBanner: true,
       home: Builder(
         builder: (context) {
-          debugPrint("Build App->AppView->Builder");
+          //debugPrint("Build App->AppView->Builder");
           return Scaffold(body: const ConnectionStatusListenerPage());
         },
       ),

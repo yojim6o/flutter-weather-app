@@ -4,7 +4,6 @@ import 'package:trent/trent.dart';
 import 'package:weather_app/src/app.dart';
 import 'package:weather_app/src/repository/theme_repository.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
-import 'package:weather_app/src/trents/forecast_trent.dart';
 import 'package:weather_app/src/trents/theme_trent.dart';
 import 'package:weather_app/src/trents/weather_trent.dart';
 

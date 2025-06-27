@@ -6,8 +6,6 @@ class LoadingSpin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SpinKitRipple(
-      color: Colors.amber /* Theme.of(context).colorScheme.tertiary */,
-    );
+    return SpinKitRipple(color: Theme.of(context).iconTheme.color);
   }
 }

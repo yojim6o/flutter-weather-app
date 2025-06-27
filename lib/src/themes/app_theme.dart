@@ -1,7 +1,7 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:weather_app/src/themes/text_theme.dart';
 
 /// The [AppTheme] defines light and dark themes for the app.
 ///
@@ -54,7 +54,7 @@ abstract final class AppTheme {
     // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-    fontFamily: GoogleFonts.pontanoSans().fontFamily,
+    textTheme: TTextTheme.customTheme,
   );
 
   // The FlexColorScheme defined dark mode ThemeData.
@@ -85,6 +85,6 @@ abstract final class AppTheme {
     // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-    fontFamily: GoogleFonts.pontanoSans().fontFamily,
+    textTheme: TTextTheme.customTheme,
   );
 }

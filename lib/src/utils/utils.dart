@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather_app/src/models/weather_model.dart';
 
 class Utils {
-  static String getWeatherAnimation(String description, bool isDay) {
+  static Widget getWeatherAnimation(String description, bool isDay) {
     String momentOfDay = isDay ? 'day' : 'night';
     switch (description.toLowerCase()) {
       case 'clouds':
@@ -12,14 +14,14 @@ class Utils {
       case 'haze':
       case 'dust':
       case 'fog':
-        return 'assets/$momentOfDay/cloudy.json';
+        return Lottie.asset('assets/$momentOfDay/cloudy.json');
       case 'rain':
       case 'shower rain':
-        return 'assets/$momentOfDay/rainy.json';
+        return Lottie.asset('assets/$momentOfDay/rainy.json');
       case 'thunderstorm':
-        return 'assets/$momentOfDay/thunder.json';
+        return Lottie.asset('assets/$momentOfDay/thunder.json');
       default:
-        return 'assets/$momentOfDay/clear.json';
+        return Lottie.asset('assets/$momentOfDay/clear.json');
     }
   }
 

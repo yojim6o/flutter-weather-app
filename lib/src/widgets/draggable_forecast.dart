@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trent/trent.dart';
 import 'package:weather_app/src/trents/forecast_trent.dart';
 import 'package:weather_app/src/models/weather_model.dart';
@@ -18,10 +17,18 @@ class DraggableForecast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
+    /* debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->DraggableSheet",
-    );
-    return DraggableScrollableSheet(
+    ); */
+    //final t = watch<ThemeTrent>(context).state.themeMode;
+    return /* Theme(
+      data: Theme.of(context).copyWith(
+        textTheme:
+            t == ThemeMode.light
+                ? TTextTheme.pontanoLight
+                : TTextTheme.pontanoDark,
+      ),
+      child: */ DraggableScrollableSheet(
       initialChildSize: 0.06,
       minChildSize: 0.06,
       maxChildSize: 0.5,
@@ -85,6 +92,7 @@ class DraggableForecast extends StatelessWidget {
           ),
         );
       },
+      //),
     );
   }
 
@@ -100,7 +108,6 @@ class DraggableForecast extends StatelessWidget {
   }
 
   Widget _buildScrollTab(BuildContext context) {
-    // Inicializar una vez con la primera selección
     final forecastTrent = get<ForecastTrent>();
 
     return Expanded(
@@ -127,7 +134,12 @@ class DraggableForecast extends StatelessWidget {
         },
         children: List.generate(
           forecastMap.length,
-          (index) => Center(child: Text(forecastMap.keys.elementAt(index))),
+          (index) => Center(
+            child: Text(
+              forecastMap.keys.elementAt(index),
+              style: TextTheme.of(context).bodySmall,
+            ),
+          ),
         ),
       ),
     );
