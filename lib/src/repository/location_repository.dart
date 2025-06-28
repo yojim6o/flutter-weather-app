@@ -1,37 +1,8 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
-import 'package:weather_app/main.dart';
-import 'package:weather_app/src/models/weather_model.dart';
 
-class WeatherService {
-  static final Uri baseUrl = Uri(
-    scheme: 'https',
-    host: 'api.openweathermap.org',
-    path: 'data/2.5/forecast',
-  );
-  final String apiKey = API_KEY;
-  final client = http.Client();
-
-  Future<WeatherModel> getWeather() async {
-    final String cityName = await _determineCityName();
-    final uri = baseUrl.replace(
-      queryParameters: {'q': cityName, 'appid': apiKey, 'units': 'metric'},
-    );
-    //debugPrint("WeatherService: Calling $uri");
-    final response = await client.get(uri);
-    //debugPrint('WeatherService: ${response.body.substring(0, 20)}');
-
-    if (response.statusCode == 200) {
-      return WeatherModel.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to load weather data');
-    }
-  }
-
-  Future<String> _determineCityName() async {
+class LocationRepository {
+  Future<String> getCityName() async {
     Position position = await _determinePosition();
     List<Placemark> placemarks = await placemarkFromCoordinates(
       position.latitude,

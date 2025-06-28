@@ -11,7 +11,7 @@ class ConnectionStatusListenerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //debugPrint("Build App->AppView->Builder->ConnectionStatusListener");
+    debugPrint("Build App->AppView->Builder->ConnectionStatusListener");
     return watchMap<ConnectionTrent, ConnectionStatus>(context, (mapper) {
       mapper
         ..as<ConnectionLoading>((state) => const LoadingSpin())

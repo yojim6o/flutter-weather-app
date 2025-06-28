@@ -63,5 +63,7 @@ class TTextTheme {
     ),
   );
 
-  static TextTheme customTheme = GoogleFonts.poppinsTextTheme(_baseTextTheme);
+  static TextTheme customTheme = GoogleFonts.yantramanavTextTheme(
+    _baseTextTheme,
+  );
 }

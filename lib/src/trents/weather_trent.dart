@@ -1,17 +1,24 @@
-// weather_cubit.dart
+// weather_Trent.dart
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:trent/trent.dart';
-import 'package:weather_app/src/services/weather_service.dart';
+import 'package:weather_app/src/repository/location_repository.dart';
+import 'package:weather_app/src/repository/weather_repository.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
 import 'package:weather_app/src/trents/states/connection_state.dart';
+import 'package:weather_app/src/trents/states/unit_state.dart';
+import 'package:weather_app/src/trents/unit_trent.dart';
 import 'states/weather_state.dart';
 
 class WeatherTrent extends Trent<WeatherState> {
-  final WeatherService weatherService = WeatherService();
+  final WeatherRepository _weatherRepository;
+  final LocationRepository _locationRepository;
   Timer? _refreshTimer;
 
-  WeatherTrent() : super(WeatherInitial()) {
+  WeatherTrent(this._weatherRepository, this._locationRepository)
+    : super(WeatherInitial()) {
     _startListening();
   }
 
@@ -19,21 +26,53 @@ class WeatherTrent extends Trent<WeatherState> {
     get<ConnectionTrent>().stateStream.listen((status) {
       if (status is ConnectionLoaded) {
         _fetchWeatherInfo();
+        _restartRefreshTimer();
       }
     });
+
+    /* get<UnitTrent>().stateStream.listen((unit) {
+      print("Weather Trent: Listening UnitTrent value $unit");
+      _fetchWeatherInfo();
+      _restartRefreshTimer();
+    }); */
+
+    /*  Rx.combineLatest2<ConnectionStatus, UnitState, bool>(
+      get<ConnectionTrent>().stateStream,
+      get<UnitTrent>().stateStream,
+      (ConnectionStatus c, UnitState u) {
+        print("WeatherTrent: combining two values, c $c, u $u");
+        if (c is! ConnectionLoaded && u.unitMode == UnitMode.initial) {
+          return false;
+        }
+
+        if (c is ConnectionLoaded && u.unitMode != UnitMode.initial) {
+          return true;
+        }
+
+        if (c is ConnectionLoaded) {
+          return true;
+        }
+        return false;
+      },
+    ).listen((bool value) {
+      if (value) {
+        print("WeatherTrent: Por lo tanto hago la llamada");
+        _fetchWeatherInfo();
+      }
+    }); */
   }
 
   Future<void> _fetchWeatherInfo() async {
-    //debugPrint("WeatherCubit: Fetching info from weatherService");
+    debugPrint("WeatherTrent: Fetching info from weatherService");
     emit(WeatherLoading());
 
     try {
-      final weather = await weatherService.getWeather();
+      final city = await _locationRepository.getCityName();
+      final weather = await _weatherRepository.getForecast(city: city);
       emit(WeatherLoaded(weather: weather));
-      _restartRefreshTimer();
     } catch (e) {
-      //debugPrint("WeatherCubit: Error fetching weather info: $e");
-      emit(WeatherError("Failed to fetch weather data"));
+      debugPrint("WeatherTrent: Error fetching weather info: $e");
+      emit(WeatherError('$e'));
     }
   }
 

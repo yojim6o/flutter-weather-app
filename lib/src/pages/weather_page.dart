@@ -42,7 +42,7 @@ class WeatherPage extends StatelessWidget {
           ),
         )
         ..orElse((state) {
-          //debugPrint(state.toString());
+          debugPrint(state.toString());
           return const Text("No Datu");
         });
     });

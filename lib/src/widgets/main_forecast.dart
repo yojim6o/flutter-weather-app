@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:trent/trent.dart';
 import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/repository/Unit_repository.dart';
+import 'package:weather_app/src/trents/unit_trent.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/utility/theme_switch.dart';
+import 'package:weather_app/src/widgets/utility/unit_switch.dart';
 
 class MainForecast extends StatelessWidget {
   final WeatherModel weatherModel;
@@ -28,6 +33,7 @@ class MainForecast extends StatelessWidget {
             _TemperatureLabel(weatherModel: weatherModel),
           ],
         ),
+        const UnitSwitch(),
         const ThemeSwitch(),
       ],
     );

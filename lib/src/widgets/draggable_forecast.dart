@@ -20,15 +20,7 @@ class DraggableForecast extends StatelessWidget {
     /* debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->DraggableSheet",
     ); */
-    //final t = watch<ThemeTrent>(context).state.themeMode;
-    return /* Theme(
-      data: Theme.of(context).copyWith(
-        textTheme:
-            t == ThemeMode.light
-                ? TTextTheme.pontanoLight
-                : TTextTheme.pontanoDark,
-      ),
-      child: */ DraggableScrollableSheet(
+    return DraggableScrollableSheet(
       initialChildSize: 0.06,
       minChildSize: 0.06,
       maxChildSize: 0.5,
@@ -137,7 +129,7 @@ class DraggableForecast extends StatelessWidget {
           (index) => Center(
             child: Text(
               forecastMap.keys.elementAt(index),
-              style: TextTheme.of(context).bodySmall,
+              style: TextTheme.of(context).bodyMedium,
             ),
           ),
         ),

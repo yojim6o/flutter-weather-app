@@ -1,77 +1,74 @@
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:trent/trent.dart';
 import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/trents/unit_trent.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/utility/my_virtual_divider.dart';
 
 class ForecastCard extends StatelessWidget {
   final ForecastItem forecast;
-  const ForecastCard(this.forecast, {super.key});
+  ForecastCard(this.forecast, {super.key});
+
+  final colors = [
+    const Color.fromARGB(195, 66, 134, 244),
+    const Color.fromARGB(195, 234, 68, 53),
+    const Color.fromARGB(195, 251, 189, 5),
+    const Color.fromARGB(195, 52, 168, 83),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _header(context),
-        Card(
-          child: Padding(
-            padding: EdgeInsetsGeometry.fromLTRB(16, 0, 16, 16),
-            child: Column(
-              spacing: 8,
-              children: [
-                _animationRow(context),
-                _descriptionRow(),
-                _tableRow(context),
-              ],
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 30),
+      child: Padding(
+        padding: EdgeInsetsGeometry.all(16),
+        child: Column(
+          spacing: 8,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _header([
+              Text(
+                'Hourly Forecast',
+                textAlign: TextAlign.center,
+                style: TextTheme.of(context).headlineSmall,
+              ),
+            ]),
+            _animationRow(
+              Utils.getWeatherAnimation(forecast.mainCondition, forecast.isDay),
+              Column(
+                children: [
+                  Text(Utils.formatDate(forecast.dt, 'EEE dd, MMM')),
+                  Text(
+                    "${forecast.dt.hour}h",
+                    style: Theme.of(context).textTheme.displayMedium,
+                  ),
+                ],
+              ),
             ),
-          ),
+            _descriptionRow(),
+            _tableRow(_buildColumns(context)),
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(left: 8, right: 8, bottom: 16, top: 32),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 16,
-        children: [
-          Text(
-            'Hourly Forecast',
-            textAlign: TextAlign.center,
-            style: TextTheme.of(context).headlineSmall,
-          ),
-        ],
       ),
     );
   }
 
-  Widget _animationRow(BuildContext context) {
+  Widget _header(List<Widget> children) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 16,
+      children: [...children],
+    );
+  }
+
+  Widget _animationRow(Widget child1, Widget child2) {
     return Row(
       children: [
-        Expanded(
-          flex: 3,
-          child: Utils.getWeatherAnimation(
-            forecast.mainCondition,
-            forecast.isDay,
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Center(
-            child: Column(
-              children: [
-                Text(DateFormat('EEE dd, y').format(forecast.dt)),
-                Text(
-                  "${forecast.dt.hour}h",
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
-              ],
-            ),
-          ),
-        ),
+        Expanded(flex: 3, child: child1),
+        Expanded(flex: 2, child: child2),
       ],
     );
   }
@@ -80,63 +77,70 @@ class ForecastCard extends StatelessWidget {
     return Center(child: Text(forecast.secondaryCondition));
   }
 
-  Widget _tableRow(BuildContext context) {
+  Widget _tableRow(List<Widget> children) {
     return IntrinsicHeight(
       child: Row(
         spacing: 8,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [..._buildDetailsColumns(context)],
+        children: [...children],
       ),
     );
   }
 
-  List<Widget> _buildDetailsColumns(BuildContext context) {
+  List<Widget> _buildColumns(BuildContext context) {
+    final unitTrent = watch<UnitTrent>(context);
+    final unitState = unitTrent.state;
     final List<Map<String, dynamic>> details = [
       {
         'icon': HugeIcons.strokeRoundedTemperature,
-        'value': '${forecast.temperature.round()}',
-        'unit': 'º',
-        'color': const Color(0xFF4285F4),
+        'value': Utils.resolveCelsiusToFarenheit(
+          forecast.temperature,
+          unitState.unitMode,
+        ),
+        'unit': Utils.resolveTempSymbol(unitState.unitMode),
       },
       {
         'icon': HugeIcons.strokeRoundedFastWind,
-        'value': '${forecast.wind.round()}',
-        'unit': 'm/s',
-        'color': const Color(0xFFEA4335),
+        'value': Utils.resolveWindSpedd(forecast.wind, unitState.unitMode),
+        'unit': Utils.resolveSpeedSymbol(unitState.unitMode),
       },
       {
         'icon': HugeIcons.strokeRoundedHumidity,
         'value': '${forecast.humidity.round()}',
         'unit': '%',
-        'color': const Color(0xFFFBBC05),
       },
       {
         'icon': HugeIcons.strokeRoundedCloudAngledRain,
         'value': '${(forecast.rainProb * 100).round()}',
         'unit': '%',
-        'color': const Color(0xFF34A853),
       },
     ];
 
-    return [
-      for (var detail in details) ...[
-        MyVirtualDivider(detail['color']),
+    final List<Widget> list = [];
+    int currentIndex = -1;
+
+    for (var e in details) {
+      list.add(MyVirtualDivider(colors[(++currentIndex) % colors.length]));
+      list.add(
         Column(
           spacing: 4,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(detail['icon'], size: 32, color: IconTheme.of(context).color),
+            Icon(e['icon'], size: 32, color: IconTheme.of(context).color),
             Text(
-              detail['value'],
+              e['value'],
               textAlign: TextAlign.center,
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
             ),
-            Text(detail['unit'], textAlign: TextAlign.center),
+            Text(e['unit'], textAlign: TextAlign.center),
           ],
         ),
-      ],
-      MyVirtualDivider(const Color(0xFF4285F4)),
-    ];
+      );
+    }
+
+    list.add(MyVirtualDivider(colors[(currentIndex + 1) % colors.length]));
+
+    return list;
   }
 }

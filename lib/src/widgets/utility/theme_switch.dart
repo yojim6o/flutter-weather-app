@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:trent/trent.dart';
 import 'package:weather_app/src/trents/theme_trent.dart';
 
@@ -15,12 +16,12 @@ class ThemeSwitch extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Switch(
-              value: state.themeMode == ThemeMode.dark,
-              onChanged: (bool val) {
-                themeTrent.switchTheme();
-              },
-              activeColor: ColorScheme.of(context).onPrimary,
+            IconButton(
+              onPressed: () => themeTrent.switchTheme(),
+              icon:
+                  state.themeMode == ThemeMode.dark
+                      ? Icon(Icons.brightness_4)
+                      : Icon(HugeIcons.strokeRoundedMoon02),
             ),
           ],
         ),
