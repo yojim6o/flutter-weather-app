@@ -14,25 +14,30 @@ class DraggableForecast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /* debugPrint(
+    debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->DraggableSheet",
-    ); */
+    );
     return watchMap<ForecastTrent, ForecastState>(context, (mapper) {
       mapper
-        ..as<ForecastLoaded>(
-          (state) => _buildDraggable(
+        ..as<ForecastLoaded>((state) {
+          //get<ForecastCardTrent>().addWeatherItem([state.data.list.first]);
+          return _buildDraggable(
+            data: state.data,
             list: _ForecastList(),
             scrollTab: _ScrollTab(data: state.data),
-          ),
-        )
+          );
+        })
         ..orElse((_) => const Material());
     });
   }
 
   DraggableScrollableSheet _buildDraggable({
+    required ForecastData data,
     required Widget list,
     required Widget scrollTab,
   }) {
+    final DraggableScrollableController controller =
+        DraggableScrollableController();
     return DraggableScrollableSheet(
       initialChildSize: 0.06,
       minChildSize: 0.06,
@@ -40,7 +45,13 @@ class DraggableForecast extends StatelessWidget {
       snapSizes: const [0.06],
       snap: true,
       expand: true,
+      controller: controller,
       builder: (BuildContext context, ScrollController scrollController) {
+        controller.addListener(() {
+          if (controller.size > 0.15) {
+            get<ForecastCardTrent>().addWeatherItem([data.list.first]);
+          }
+        });
         return DecoratedBox(
           decoration: BoxDecoration(
             boxShadow: [
@@ -121,7 +132,7 @@ class _ScrollTab extends StatelessWidget {
 
   _ScrollTab({required this.data}) {
     map = Utils.mapWeatherToForecastItems(data);
-    trent.addWeatherItem(map.entries.elementAt(0).value);
+    //trent.addWeatherItem(map.entries.elementAt(0).value);
   }
 
   @override

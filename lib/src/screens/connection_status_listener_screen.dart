@@ -26,8 +26,8 @@ class ConnectionStatusListenerScreen extends StatelessWidget {
             message: 'No internet connection',
           ),
         )
-        ..as<ConnectionLoaded>((state) => const WeatherScreen())
-        ..orElse((_) => const Material());
+        ..as<ConnectionLoaded>((state) => WeatherScreen())
+        ..orElse((_) => Center(child: const Text('loading')));
     });
   }
 }

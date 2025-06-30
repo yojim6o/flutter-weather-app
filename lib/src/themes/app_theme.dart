@@ -26,7 +26,7 @@ abstract final class AppTheme {
     swapColors: true,
     // Surface color adjustments.
     surfaceMode: FlexSurfaceMode.level,
-    blendLevel: 40,
+    blendLevel: 1,
     lightIsWhite: true,
     // Component theme configurations for light mode.
     subThemesData: const FlexSubThemesData(

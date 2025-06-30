@@ -9,7 +9,11 @@ import 'package:weather_app/src/repository/location_repository.dart';
 import 'package:weather_app/src/repository/theme_repository.dart';
 import 'package:weather_app/src/repository/weather_repository.dart';
 import 'package:weather_app/src/themes/app_theme.dart';
+import 'package:weather_app/src/trents/city_trent.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
+import 'package:weather_app/src/trents/forecast_card_trent.dart';
+import 'package:weather_app/src/trents/forecast_trent.dart';
+import 'package:weather_app/src/trents/master_weather_trent.dart';
 import 'package:weather_app/src/trents/theme_trent.dart';
 import 'package:weather_app/src/screens/connection_status_listener_screen.dart';
 import 'package:http/http.dart' as http;
@@ -56,12 +60,11 @@ class App extends StatelessWidget {
               register(ThemeTrent(context.read<ThemeRepository>())),
               register(UnitTrent(context.read<UnitRepository>())),
               register(ConnectionTrent()),
-              register(
-                WeatherTrent(
-                  context.read<WeatherRepository>(),
-                  context.read<LocationRepository>(),
-                ),
-              ),
+              register(CityTrent(context.read<LocationRepository>())),
+              register(WeatherTrent(context.read<WeatherRepository>())),
+              register(ForecastTrent(context.read<WeatherRepository>())),
+              register(MasterWeatherTrent()),
+              register(ForecastCardTrent()),
             ],
             child: AppView(),
           );

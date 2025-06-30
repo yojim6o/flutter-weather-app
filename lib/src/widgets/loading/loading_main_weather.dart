@@ -5,21 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:weather_app/src/utils/utils.dart';
 
-class LoadingMainForecast extends StatefulWidget {
-  const LoadingMainForecast({super.key});
+class LoadingMainWeather extends StatefulWidget {
+  const LoadingMainWeather({super.key});
 
   @override
-  State<LoadingMainForecast> createState() => _LoadingMainForecastState();
+  State<LoadingMainWeather> createState() => _LoadingMainWeatherState();
 }
 
-class _LoadingMainForecastState extends State<LoadingMainForecast> {
-  late Timer _timer;
+class _LoadingMainWeatherState extends State<LoadingMainWeather> {
+  late Timer _cityTimer;
+  late Timer _temperatureTimer;
+  late Timer _lottieTimer;
   final Random _random = Random();
 
   int _temperature = 20;
   int _feelsLike = 22;
   String _cityName = "CARGANDO...";
   Widget _lottie = Utils.getWeatherAnimation('clear', false);
+  int _lottieIndex = 0;
 
   final List<String> _randomCities = [
     "VALENCIA",
@@ -50,27 +53,50 @@ class _LoadingMainForecastState extends State<LoadingMainForecast> {
   void initState() {
     super.initState();
 
-    _generateRandomValues();
+    _generateInitialValues();
 
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    _cityTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
       if (mounted) {
         setState(() {
-          _generateRandomValues();
+          _cityName = _randomCities[_random.nextInt(_randomCities.length)];
+        });
+      }
+    });
+
+    _temperatureTimer = Timer.periodic(const Duration(milliseconds: 300), (
+      timer,
+    ) {
+      if (mounted) {
+        setState(() {
+          _temperature = _random.nextInt(40) + 5; // 5-45°C
+          _feelsLike = _temperature + _random.nextInt(6) - 3; // ±3 grados
+        });
+      }
+    });
+
+    _lottieTimer = Timer.periodic(const Duration(milliseconds: 800), (timer) {
+      if (mounted) {
+        setState(() {
+          _lottieIndex = (_lottieIndex + 1) % _randomLotties.length;
+          _lottie = _randomLotties[_lottieIndex];
         });
       }
     });
   }
 
-  void _generateRandomValues() {
-    _temperature = _random.nextInt(40) + 5; // 5-45°C
-    _feelsLike = _temperature + _random.nextInt(6) - 3; // ±3 grados
+  void _generateInitialValues() {
+    _temperature = _random.nextInt(40) + 5;
+    _feelsLike = _temperature + _random.nextInt(6) - 3;
     _cityName = _randomCities[_random.nextInt(_randomCities.length)];
-    _lottie = _randomLotties[_random.nextInt(_randomLotties.length)];
+    _lottieIndex = 0;
+    _lottie = _randomLotties[_lottieIndex];
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _cityTimer.cancel();
+    _temperatureTimer.cancel();
+    _lottieTimer.cancel();
     super.dispose();
   }
 
@@ -89,8 +115,6 @@ class _LoadingMainForecastState extends State<LoadingMainForecast> {
             ),
           ],
         ),
-        /* const UnitSwitch(),
-        const ThemeSwitch(), */
       ],
     );
   }
@@ -109,17 +133,14 @@ class _LoadingCityLabel extends StatelessWidget {
           Icons.location_on,
           color: IconTheme.of(context).color?.withOpacity(0.7),
         ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
-          child: Text(
-            cityName,
-            key: ValueKey(cityName),
-            style: TextTheme.of(context).titleLarge?.copyWith(
-              fontFamily: GoogleFonts.oswald().fontFamily,
-              color: Theme.of(
-                context,
-              ).textTheme.titleLarge?.color?.withOpacity(0.7),
-            ),
+        Text(
+          cityName,
+          key: ValueKey(cityName),
+          style: TextTheme.of(context).titleLarge?.copyWith(
+            fontFamily: GoogleFonts.oswald().fontFamily,
+            color: Theme.of(
+              context,
+            ).textTheme.titleLarge?.color?.withOpacity(0.7),
           ),
         ),
       ],
@@ -185,31 +206,24 @@ class _LoadingTemperatureLabel extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
-          child: Text(
-            '$temperatureº',
-            key: ValueKey(temperature),
-            style: TextTheme.of(context).displayMedium?.copyWith(
-              fontFamily: GoogleFonts.oswald().fontFamily,
-              fontWeight: FontWeight.w800,
-              color: Theme.of(
-                context,
-              ).textTheme.displayMedium?.color?.withOpacity(0.7),
-            ),
+        Text(
+          '$temperatureº',
+          style: TextTheme.of(context).displayMedium?.copyWith(
+            fontFamily: GoogleFonts.oswald().fontFamily,
+            fontWeight: FontWeight.w800,
+            color: Theme.of(
+              context,
+            ).textTheme.displayMedium?.color?.withOpacity(0.7),
           ),
         ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
-          child: Text(
-            '/$feelsLikeº',
-            key: ValueKey(feelsLike),
-            style: TextTheme.of(context).bodyLarge?.copyWith(
-              fontFamily: GoogleFonts.oswald().fontFamily,
-              color: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.color?.withOpacity(0.7),
-            ),
+
+        Text(
+          '/$feelsLikeº',
+          style: TextTheme.of(context).bodyLarge?.copyWith(
+            fontFamily: GoogleFonts.oswald().fontFamily,
+            color: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.color?.withOpacity(0.7),
           ),
         ),
       ],

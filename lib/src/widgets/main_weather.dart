@@ -2,35 +2,52 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trent/trent.dart';
 import 'package:weather_app/src/models/weather/weather_data.dart';
+import 'package:weather_app/src/trents/states/weather_state.dart';
 import 'package:weather_app/src/trents/unit_trent.dart';
+import 'package:weather_app/src/trents/weather_trent.dart';
 import 'package:weather_app/src/utils/utils.dart';
+import 'package:weather_app/src/widgets/error/generic_error.dart';
+import 'package:weather_app/src/widgets/loading/loading_main_weather.dart';
 import 'package:weather_app/src/widgets/utility/theme_switch.dart';
 import 'package:weather_app/src/widgets/utility/unit_switch.dart';
 
-class MainForecast extends StatelessWidget {
-  final WeatherData data;
-
-  const MainForecast({super.key, required this.data});
+class MainWeather extends StatelessWidget {
+  const MainWeather({super.key});
 
   @override
   Widget build(BuildContext context) {
-    /* debugPrint(
+    debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->MainForecast",
-    ); */
-    return Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _CityLabel(data.city),
-            Utils.getWeatherAnimation(data.mainCondition, data.isDay),
-            _TemperatureLabel(data: data),
-          ],
-        ),
-        const UnitSwitch(),
-        const ThemeSwitch(),
-      ],
     );
+    return watchMap<WeatherTrent, WeatherState>(context, (mapper) {
+      mapper
+        ..as<WeatherLoading>((state) => const LoadingMainWeather())
+        ..as<WeatherError>(
+          (state) => const GenericError(
+            animationName: "invalid_request",
+            message: "Something went wrong while fetching weather data.",
+          ),
+        )
+        ..as<WeatherLoaded>(
+          (state) => Stack(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _CityLabel(state.data.city),
+                  Utils.getWeatherAnimation(
+                    state.data.mainCondition,
+                    state.data.isDay,
+                  ),
+                  _TemperatureLabel(data: state.data),
+                ],
+              ),
+              const UnitSwitch(),
+              const ThemeSwitch(),
+            ],
+          ),
+        );
+    });
   }
 }
 

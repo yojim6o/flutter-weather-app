@@ -20,7 +20,6 @@ class ForecastCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerLowest,
       margin: EdgeInsets.symmetric(vertical: 30),
       child: Padding(
         padding: EdgeInsetsGeometry.all(16),
