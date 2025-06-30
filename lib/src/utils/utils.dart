@@ -2,7 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/models/forecast/forecast_data.dart';
+import 'package:weather_app/src/models/weather/weather_data.dart';
 import 'package:weather_app/src/trents/states/unit_state.dart';
 
 class Utils {
@@ -41,13 +42,10 @@ class Utils {
     return '$inputWeekday, ${inputHour}h';
   }
 
-  static Map<String, List<ForecastItem>> mapWeatherToForecastItems(
-    WeatherModel weatherModel,
+  static Map<String, List<WeatherData>> mapWeatherToForecastItems(
+    ForecastData data,
   ) {
-    return groupBy(
-      weatherModel.forecastList,
-      (f) => formatDateToWheelItem(f.dt),
-    );
+    return groupBy(data.list, (w) => formatDateToWheelItem(w.date));
   }
 
   static String formatDate(DateTime dt, String format) {

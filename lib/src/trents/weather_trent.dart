@@ -1,15 +1,11 @@
-// weather_Trent.dart
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:trent/trent.dart';
+import 'package:weather_app/src/models/weather/weather_data.dart';
 import 'package:weather_app/src/repository/location_repository.dart';
 import 'package:weather_app/src/repository/weather_repository.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
 import 'package:weather_app/src/trents/states/connection_state.dart';
-import 'package:weather_app/src/trents/states/unit_state.dart';
-import 'package:weather_app/src/trents/unit_trent.dart';
 import 'states/weather_state.dart';
 
 class WeatherTrent extends Trent<WeatherState> {
@@ -35,31 +31,6 @@ class WeatherTrent extends Trent<WeatherState> {
       _fetchWeatherInfo();
       _restartRefreshTimer();
     }); */
-
-    /*  Rx.combineLatest2<ConnectionStatus, UnitState, bool>(
-      get<ConnectionTrent>().stateStream,
-      get<UnitTrent>().stateStream,
-      (ConnectionStatus c, UnitState u) {
-        print("WeatherTrent: combining two values, c $c, u $u");
-        if (c is! ConnectionLoaded && u.unitMode == UnitMode.initial) {
-          return false;
-        }
-
-        if (c is ConnectionLoaded && u.unitMode != UnitMode.initial) {
-          return true;
-        }
-
-        if (c is ConnectionLoaded) {
-          return true;
-        }
-        return false;
-      },
-    ).listen((bool value) {
-      if (value) {
-        print("WeatherTrent: Por lo tanto hago la llamada");
-        _fetchWeatherInfo();
-      }
-    }); */
   }
 
   Future<void> _fetchWeatherInfo() async {
@@ -68,8 +39,16 @@ class WeatherTrent extends Trent<WeatherState> {
 
     try {
       final city = await _locationRepository.getCityName();
-      final weather = await _weatherRepository.getForecast(city: city);
-      emit(WeatherLoaded(weather: weather));
+      final weatherInfo = await _weatherRepository.getWeather(city: city);
+      emit(
+        WeatherLoaded(
+          data: WeatherData.from(
+            weather: weatherInfo,
+            sunrise: weatherInfo.sys.sunrise,
+            sunset: weatherInfo.sys.sunset,
+          ),
+        ),
+      );
     } catch (e) {
       debugPrint("WeatherTrent: Error fetching weather info: $e");
       emit(WeatherError('$e'));

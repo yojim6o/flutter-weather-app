@@ -1,4 +1,6 @@
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:weather_app/src/pages/connection_status_listener_page.dart';
+import 'package:weather_app/src/screens/connection_status_listener_screen.dart';
 
-final routes = [GetPage(name: '/', page: () => ConnectionStatusListenerPage())];
+final routes = [
+  GetPage(name: '/', page: () => ConnectionStatusListenerScreen()),
+];

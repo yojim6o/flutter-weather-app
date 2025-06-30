@@ -1,11 +1,40 @@
+import 'package:flutter/material.dart';
 import 'package:trent/trent.dart';
-import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/models/forecast/forecast_data.dart';
+import 'package:weather_app/src/repository/location_repository.dart';
+import 'package:weather_app/src/repository/weather_repository.dart';
+import 'package:weather_app/src/trents/connection_trent.dart';
+import 'package:weather_app/src/trents/states/connection_state.dart';
 
 class ForecastTrent extends Trent<ForecastState> {
-  ForecastTrent() : super(ForecastEmpty());
+  final WeatherRepository _weatherRepository;
+  final LocationRepository _locationRepository;
 
-  void addForecastList(List<ForecastItem> list) {
-    emit(ForecastLoaded(list.first));
+  ForecastTrent(this._weatherRepository, this._locationRepository)
+    : super(ForecastEmpty()) {
+    _startListening();
+  }
+
+  void _startListening() {
+    get<ConnectionTrent>().stateStream.listen((status) {
+      if (status is ConnectionLoaded) {
+        _fetchForecastInfo();
+      }
+    });
+  }
+
+  void _fetchForecastInfo() async {
+    debugPrint("ForecastTrent: Fetching forecast info from weatherRepository");
+    emit(ForecastLoading());
+
+    try {
+      final city = await _locationRepository.getCityName();
+      final forecast = await _weatherRepository.getForecast(city: city);
+      emit(ForecastLoaded(ForecastData.from(forecast)));
+    } catch (e) {
+      debugPrint("ForecastTrent: Error fetching weather info: $e");
+      emit(ForecastError('$e'));
+    }
   }
 }
 
@@ -21,15 +50,38 @@ class ForecastEmpty extends ForecastState {
   }
 }
 
+class ForecastLoading extends ForecastState {
+  @override
+  List<Object?> get props => [];
+
+  @override
+  ForecastState copyWith() {
+    return this;
+  }
+}
+
 class ForecastLoaded extends ForecastState {
-  final ForecastItem forecastItem;
+  final ForecastData data;
 
-  ForecastLoaded(this.forecastItem);
+  ForecastLoaded(this.data);
   @override
-  List<Object?> get props => [forecastItem];
+  List<Object?> get props => [data];
 
   @override
-  ForecastState copyWith({ForecastItem? i}) {
-    return ForecastLoaded(i ?? forecastItem);
+  ForecastState copyWith({ForecastData? w}) {
+    return ForecastLoaded(w ?? data);
+  }
+}
+
+class ForecastError extends ForecastState {
+  final String err;
+
+  ForecastError(this.err);
+  @override
+  List<Object?> get props => [err];
+
+  @override
+  ForecastState copyWith({String? w}) {
+    return ForecastError(w ?? err);
   }
 }

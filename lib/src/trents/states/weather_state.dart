@@ -1,6 +1,5 @@
-// weather_state.dart
 import 'package:trent/trent.dart';
-import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/models/weather/weather_data.dart';
 
 abstract class WeatherState extends EquatableCopyable<WeatherState> {
   WeatherState();
@@ -12,30 +11,28 @@ abstract class WeatherState extends EquatableCopyable<WeatherState> {
 class WeatherInitial extends WeatherState {
   @override
   WeatherState copyWith() {
-    // TODO: implement copyWith
-    throw UnimplementedError();
+    return this;
   }
 }
 
 class WeatherLoading extends WeatherState {
   @override
   WeatherState copyWith() {
-    // TODO: implement copyWith
-    throw UnimplementedError();
+    return this;
   }
 }
 
 class WeatherLoaded extends WeatherState {
-  final WeatherModel weather;
+  final WeatherData data;
 
-  WeatherLoaded({required this.weather});
-
-  @override
-  List<Object?> get props => [weather];
+  WeatherLoaded({required this.data});
 
   @override
-  WeatherState copyWith({WeatherModel? weatherModel}) {
-    return WeatherLoaded(weather: weatherModel ?? weather);
+  List<Object?> get props => [data];
+
+  @override
+  WeatherState copyWith({WeatherData? w}) {
+    return WeatherLoaded(data: w ?? data);
   }
 }
 

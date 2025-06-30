@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:weather_app/src/api/api.dart';
-import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/models/forecast/forecast.dart';
 import 'package:http/http.dart' as http;
+import 'package:weather_app/src/models/weather/weather.dart';
 
 abstract class WeatherRepository {
-  Future<WeatherModel> getForecast({required String city});
+  Future<Weather> getWeather({required String city});
+  Future<Forecast> getForecast({required String city});
 }
 
 class HttpWeatherRepository extends WeatherRepository {
@@ -15,9 +16,15 @@ class HttpWeatherRepository extends WeatherRepository {
 
   HttpWeatherRepository({required this.api, required this.client});
   @override
-  Future<WeatherModel> getForecast({required String city}) => _getData(
+  Future<Forecast> getForecast({required String city}) => _getData(
     uri: api.forecast(city),
-    builder: (data) => WeatherModel.fromJson(data),
+    builder: (data) => Forecast.fromJson(data),
+  );
+
+  @override
+  Future<Weather> getWeather({required String city}) => _getData(
+    uri: api.weather(city),
+    builder: (data) => Weather.fromJson(data),
   );
 
   Future<T> _getData<T>({

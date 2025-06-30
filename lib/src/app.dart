@@ -10,9 +10,8 @@ import 'package:weather_app/src/repository/theme_repository.dart';
 import 'package:weather_app/src/repository/weather_repository.dart';
 import 'package:weather_app/src/themes/app_theme.dart';
 import 'package:weather_app/src/trents/connection_trent.dart';
-import 'package:weather_app/src/trents/states/unit_state.dart';
 import 'package:weather_app/src/trents/theme_trent.dart';
-import 'package:weather_app/src/pages/connection_status_listener_page.dart';
+import 'package:weather_app/src/screens/connection_status_listener_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:weather_app/src/trents/unit_trent.dart';
 import 'package:weather_app/src/trents/weather_trent.dart';
@@ -87,7 +86,7 @@ class AppView extends StatelessWidget {
       home: Builder(
         builder: (context) {
           debugPrint("Build App->AppView->Builder");
-          return Scaffold(body: const ConnectionStatusListenerPage());
+          return Scaffold(body: const ConnectionStatusListenerScreen());
         },
       ),
     );

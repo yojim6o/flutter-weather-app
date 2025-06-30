@@ -1,16 +1,14 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:intl/intl.dart';
 import 'package:trent/trent.dart';
-import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/models/weather/weather_data.dart';
 import 'package:weather_app/src/trents/unit_trent.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/utility/my_virtual_divider.dart';
 
 class ForecastCard extends StatelessWidget {
-  final ForecastItem forecast;
-  ForecastCard(this.forecast, {super.key});
+  final WeatherData data;
+  ForecastCard(this.data, {super.key});
 
   final colors = [
     const Color.fromARGB(195, 66, 134, 244),
@@ -22,6 +20,7 @@ class ForecastCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Theme.of(context).colorScheme.surfaceContainerLowest,
       margin: EdgeInsets.symmetric(vertical: 30),
       child: Padding(
         padding: EdgeInsetsGeometry.all(16),
@@ -37,12 +36,12 @@ class ForecastCard extends StatelessWidget {
               ),
             ]),
             _animationRow(
-              Utils.getWeatherAnimation(forecast.mainCondition, forecast.isDay),
+              Utils.getWeatherAnimation(data.mainCondition, data.isDay),
               Column(
                 children: [
-                  Text(Utils.formatDate(forecast.dt, 'EEE dd, MMM')),
+                  Text(Utils.formatDate(data.date, 'EEE dd, MMM')),
                   Text(
-                    "${forecast.dt.hour}h",
+                    "${data.date.hour}h",
                     style: Theme.of(context).textTheme.displayMedium,
                   ),
                 ],
@@ -74,7 +73,7 @@ class ForecastCard extends StatelessWidget {
   }
 
   Widget _descriptionRow() {
-    return Center(child: Text(forecast.secondaryCondition));
+    return Center(child: Text(data.description));
   }
 
   Widget _tableRow(List<Widget> children) {
@@ -93,25 +92,22 @@ class ForecastCard extends StatelessWidget {
     final List<Map<String, dynamic>> details = [
       {
         'icon': HugeIcons.strokeRoundedTemperature,
-        'value': Utils.resolveCelsiusToFarenheit(
-          forecast.temperature,
-          unitState.unitMode,
-        ),
+        'value': data.temp.onUnit(unitState.unitMode).round().toString(),
         'unit': Utils.resolveTempSymbol(unitState.unitMode),
       },
       {
         'icon': HugeIcons.strokeRoundedFastWind,
-        'value': Utils.resolveWindSpedd(forecast.wind, unitState.unitMode),
+        'value': data.windSpeed.onUnit(unitState.unitMode).round().toString(),
         'unit': Utils.resolveSpeedSymbol(unitState.unitMode),
       },
       {
         'icon': HugeIcons.strokeRoundedHumidity,
-        'value': '${forecast.humidity.round()}',
+        'value': '${data.humidity.round()}',
         'unit': '%',
       },
       {
         'icon': HugeIcons.strokeRoundedCloudAngledRain,
-        'value': '${(forecast.rainProb * 100).round()}',
+        'value': '${(data.rainProbability * 100).round()}',
         'unit': '%',
       },
     ];

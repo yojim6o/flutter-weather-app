@@ -1,25 +1,38 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:trent/trent.dart';
+import 'package:weather_app/src/models/forecast/forecast_data.dart';
+import 'package:weather_app/src/models/weather/weather_data.dart';
+import 'package:weather_app/src/trents/forecast_card_trent.dart';
 import 'package:weather_app/src/trents/forecast_trent.dart';
-import 'package:weather_app/src/models/weather_model.dart';
+import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/forecast_card.dart';
 import 'package:wheel_slider/wheel_slider.dart';
 
 class DraggableForecast extends StatelessWidget {
-  final Map<String, List<ForecastItem>> forecastMap;
-
-  DraggableForecast({super.key, required this.forecastMap}) {
-    get<ForecastTrent>().addForecastList(
-      forecastMap.entries.elementAtOrNull(0)?.value ?? [],
-    );
-  }
+  const DraggableForecast({super.key});
 
   @override
   Widget build(BuildContext context) {
     /* debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->DraggableSheet",
     ); */
+    return watchMap<ForecastTrent, ForecastState>(context, (mapper) {
+      mapper
+        ..as<ForecastLoaded>(
+          (state) => _buildDraggable(
+            list: _ForecastList(),
+            scrollTab: _ScrollTab(data: state.data),
+          ),
+        )
+        ..orElse((_) => const Material());
+    });
+  }
+
+  DraggableScrollableSheet _buildDraggable({
+    required Widget list,
+    required Widget scrollTab,
+  }) {
     return DraggableScrollableSheet(
       initialChildSize: 0.06,
       minChildSize: 0.06,
@@ -48,7 +61,7 @@ class DraggableForecast extends StatelessWidget {
               top: Radius.circular(16),
               bottom: Radius.circular(0),
             ),
-            color: ColorScheme.of(context).surfaceContainerLowest,
+            color: ColorScheme.of(context).surfaceContainer,
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -73,10 +86,7 @@ class DraggableForecast extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
-                    children: [
-                      _buildForecastList(context),
-                      _buildScrollTab(context),
-                    ],
+                    children: [list, scrollTab],
                   ),
                 ],
               ),
@@ -87,25 +97,39 @@ class DraggableForecast extends StatelessWidget {
       //),
     );
   }
+}
 
-  Widget _buildForecastList(BuildContext context) {
+class _ForecastList extends StatelessWidget {
+  const _ForecastList();
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       flex: 8,
-      child: watchMap<ForecastTrent, ForecastState>(context, (mapper) {
+      child: watchMap<ForecastCardTrent, ForecastCardState>(context, (mapper) {
         mapper
-          ..as<ForecastLoaded>((state) => ForecastCard(state.forecastItem))
+          ..as<ForecastItemLoaded>((state) => ForecastCard(state.data))
           ..orElse((_) => const SizedBox.shrink());
       }),
     );
   }
+}
 
-  Widget _buildScrollTab(BuildContext context) {
-    final forecastTrent = get<ForecastTrent>();
+class _ScrollTab extends StatelessWidget {
+  final ForecastData data;
+  late final Map<String, List<WeatherData>> map;
+  final ForecastCardTrent trent = get<ForecastCardTrent>();
 
+  _ScrollTab({required this.data}) {
+    map = Utils.mapWeatherToForecastItems(data);
+    trent.addWeatherItem(map.entries.elementAt(0).value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       flex: 2,
       child: WheelSlider.customWidget(
-        totalCount: forecastMap.length,
+        totalCount: map.length,
         isInfinite: false,
         horizontal: false,
         showPointer: true,
@@ -120,15 +144,13 @@ class DraggableForecast extends StatelessWidget {
         scrollPhysics: const BouncingScrollPhysics(),
         hapticFeedbackType: HapticFeedbackType.vibrate,
         onValueChanged: (val) {
-          forecastTrent.addForecastList(
-            forecastMap.entries.elementAt(val).value,
-          );
+          trent.addWeatherItem(map.entries.elementAt(val).value);
         },
         children: List.generate(
-          forecastMap.length,
+          map.length,
           (index) => Center(
             child: Text(
-              forecastMap.keys.elementAt(index),
+              map.keys.elementAt(index),
               style: TextTheme.of(context).bodyMedium,
             ),
           ),

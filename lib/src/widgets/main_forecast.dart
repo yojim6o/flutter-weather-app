@@ -1,36 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trent/trent.dart';
-import 'package:weather_app/src/models/weather_model.dart';
-import 'package:weather_app/src/repository/Unit_repository.dart';
+import 'package:weather_app/src/models/weather/weather_data.dart';
 import 'package:weather_app/src/trents/unit_trent.dart';
 import 'package:weather_app/src/utils/utils.dart';
 import 'package:weather_app/src/widgets/utility/theme_switch.dart';
 import 'package:weather_app/src/widgets/utility/unit_switch.dart';
 
 class MainForecast extends StatelessWidget {
-  final WeatherModel weatherModel;
+  final WeatherData data;
 
-  const MainForecast({super.key, required this.weatherModel});
+  const MainForecast({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     /* debugPrint(
       "Build App->AppView->Builder->ConnectionStatusListenerPage->WetaherPage->MainForecast",
     ); */
-    final firstForecastItem = weatherModel.forecastList.first;
     return Stack(
       children: [
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _CityLabel(weatherModel.cityName),
-            Utils.getWeatherAnimation(
-              firstForecastItem.mainCondition,
-              firstForecastItem.isDay,
-            ),
-            _TemperatureLabel(weatherModel: weatherModel),
+            _CityLabel(data.city),
+            Utils.getWeatherAnimation(data.mainCondition, data.isDay),
+            _TemperatureLabel(data: data),
           ],
         ),
         const UnitSwitch(),
@@ -61,23 +55,25 @@ class _CityLabel extends StatelessWidget {
 }
 
 class _TemperatureLabel extends StatelessWidget {
-  final WeatherModel weatherModel;
+  final WeatherData data;
 
-  const _TemperatureLabel({required this.weatherModel});
+  const _TemperatureLabel({required this.data});
   @override
   Widget build(BuildContext context) {
+    final unitTrent = watch<UnitTrent>(context);
+    final unitState = unitTrent.state;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          '${weatherModel.forecastList[0].temperature.round()}º',
+          '${data.temp.onUnit(unitState.unitMode).round().toString()}º',
           style: TextTheme.of(context).displayMedium?.copyWith(
             fontFamily: GoogleFonts.oswald().fontFamily,
             fontWeight: FontWeight.w800,
           ),
         ),
         Text(
-          '/${weatherModel.forecastList[0].feelsLike.round()}º',
+          '/${data.feelsLike.onUnit(unitState.unitMode).round().toString()}º',
           style: TextTheme.of(
             context,
           ).bodyLarge?.copyWith(fontFamily: GoogleFonts.oswald().fontFamily),
