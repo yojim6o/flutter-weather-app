@@ -21,7 +21,7 @@ class MasterWeatherTrent extends Trent<MasterWeatherState> {
       },
     ).listen((value) {
       if (value) {
-        emit(MaserWeatherLoaded());
+        emit(MasterWeatherLoaded());
       }
     });
   }
@@ -40,11 +40,11 @@ class MaserWeatherLoading extends MasterWeatherState {
   List<Object?> get props => [];
 }
 
-class MaserWeatherLoaded extends MasterWeatherState {
-  MaserWeatherLoaded();
+class MasterWeatherLoaded extends MasterWeatherState {
+  MasterWeatherLoaded();
   @override
   MasterWeatherState copyWith() {
-    return MaserWeatherLoaded();
+    return MasterWeatherLoaded();
   }
 
   @override

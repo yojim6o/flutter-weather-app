@@ -12,7 +12,7 @@ class WeatherScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return watchMap<MasterWeatherTrent, MasterWeatherState>(context, (mapper) {
       mapper
-        ..as<MaserWeatherLoaded>((state) {
+        ..as<MasterWeatherLoaded>((state) {
           return _FadeInWidget(
             child: Stack(children: [MainWeather(), DraggableForecast()]),
           );
@@ -40,10 +40,10 @@ class _FadeInWidgetState extends State<_FadeInWidget>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(seconds: 1),
+      duration: Duration(milliseconds: 1100),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+    _animation = CurveTween(curve: Curves.easeInExpo).animate(_controller);
     _controller.forward();
   }
 

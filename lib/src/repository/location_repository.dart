@@ -1,8 +1,12 @@
+import 'package:flutter/rendering.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationRepository {
   Future<String> getCityName() async {
+    debugPrint(
+      "LocationRepository: start fetching ${DateTime.now().millisecondsSinceEpoch}",
+    );
     Position position = await _determinePosition();
     List<Placemark> placemarks = await placemarkFromCoordinates(
       position.latitude,
@@ -13,6 +17,9 @@ class LocationRepository {
       throw Error.safeToString("No city found with given coordinates");
     }
 
+    debugPrint(
+      "LocationRepository: end fetching ${DateTime.now().millisecondsSinceEpoch}",
+    );
     return placemarks[0].locality!;
   }
 

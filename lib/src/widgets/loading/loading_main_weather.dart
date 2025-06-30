@@ -12,8 +12,10 @@ class LoadingMainWeather extends StatefulWidget {
   State<LoadingMainWeather> createState() => _LoadingMainWeatherState();
 }
 
-class _LoadingMainWeatherState extends State<LoadingMainWeather> {
+class _LoadingMainWeatherState extends State<LoadingMainWeather>
+    with SingleTickerProviderStateMixin {
   late Timer _cityTimer;
+  late Timer _messageTimer;
   late Timer _temperatureTimer;
   late Timer _lottieTimer;
   final Random _random = Random();
@@ -21,8 +23,16 @@ class _LoadingMainWeatherState extends State<LoadingMainWeather> {
   int _temperature = 20;
   int _feelsLike = 22;
   String _cityName = "CARGANDO...";
+  String _message = "Preparing location...";
   Widget _lottie = Utils.getWeatherAnimation('clear', false);
   int _lottieIndex = 0;
+  int _messageIndex = 0;
+
+  final List<String> _randomMessages = [
+    "Resolving city...",
+    "Checking network...",
+    "Calculating location...",
+  ];
 
   final List<String> _randomCities = [
     "VALENCIA",
@@ -49,13 +59,21 @@ class _LoadingMainWeatherState extends State<LoadingMainWeather> {
     Utils.getWeatherAnimation('clouds', false),
   ];
 
+  late AnimationController _animationController;
+  final Tween<double> _opacityTween = Tween<double>(begin: 0.0, end: 1.0);
+
   @override
   void initState() {
     super.initState();
 
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    )..repeat(reverse: true);
+
     _generateInitialValues();
 
-    _cityTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+    _cityTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (mounted) {
         setState(() {
           _cityName = _randomCities[_random.nextInt(_randomCities.length)];
@@ -63,7 +81,16 @@ class _LoadingMainWeatherState extends State<LoadingMainWeather> {
       }
     });
 
-    _temperatureTimer = Timer.periodic(const Duration(milliseconds: 300), (
+    _messageTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (mounted) {
+        setState(() {
+          _messageIndex = (_messageIndex + 1) % _randomMessages.length;
+          _message = _randomMessages[_messageIndex];
+        });
+      }
+    });
+
+    _temperatureTimer = Timer.periodic(const Duration(milliseconds: 150), (
       timer,
     ) {
       if (mounted) {
@@ -74,7 +101,7 @@ class _LoadingMainWeatherState extends State<LoadingMainWeather> {
       }
     });
 
-    _lottieTimer = Timer.periodic(const Duration(milliseconds: 800), (timer) {
+    _lottieTimer = Timer.periodic(const Duration(milliseconds: 400), (timer) {
       if (mounted) {
         setState(() {
           _lottieIndex = (_lottieIndex + 1) % _randomLotties.length;
@@ -97,6 +124,8 @@ class _LoadingMainWeatherState extends State<LoadingMainWeather> {
     _cityTimer.cancel();
     _temperatureTimer.cancel();
     _lottieTimer.cancel();
+    _messageTimer.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -112,6 +141,35 @@ class _LoadingMainWeatherState extends State<LoadingMainWeather> {
             _LoadingTemperatureLabel(
               temperature: _temperature,
               feelsLike: _feelsLike,
+            ),
+          ],
+        ),
+        Stack(
+          children: [
+            Opacity(
+              opacity: 0.6,
+              child: Container(
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  color: ColorScheme.of(context).secondaryFixedDim,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: AnimatedOpacity(
+                opacity: _opacityTween.evaluate(_animationController),
+                duration: Duration(seconds: 1),
+
+                child: Text(
+                  _message.toUpperCase(),
+                  key: ValueKey(DateTime.now().microsecondsSinceEpoch),
+                  style: TextTheme.of(context).headlineMedium?.copyWith(
+                    fontFamily: GoogleFonts.oswald().fontFamily,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
